@@ -22,7 +22,7 @@ namespace PRG2_Assignment_Hotel_Guest_Management_System_
         }
         public bool RedeemPoints(int x)
         {
-
+            return true;
         }
         public override string ToString()
         {

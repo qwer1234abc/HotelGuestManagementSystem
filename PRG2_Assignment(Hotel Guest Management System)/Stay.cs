@@ -24,7 +24,7 @@ namespace PRG2_Assignment_Hotel_Guest_Management_System_
         public double CalculateTotal()
         {
             int dayStayed = CheckoutDate.Subtract(CheckinDate).Days;
-            double CheckOut = dayStayed * 
+            return 3;
         }
         public override string ToString()
         {

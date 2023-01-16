@@ -25,7 +25,7 @@ namespace PRG2_Assignment_Hotel_Guest_Management_System_
         }
         public override string ToString()
         {
-            return base.ToString();
+            return $"{Name, -20}{PassportNum, -20}{HotelStay.CheckinDate, -20:dd/MM/yyyy}{HotelStay.CheckoutDate, -20:dd/MM/yyyy}{Member.Status, -20}{Member.Points, -20}";
         }
     }
 }
