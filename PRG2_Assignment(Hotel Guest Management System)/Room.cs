@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PRG2_Assignment_Hotel_Guest_Management_System_
 {
-    internal class Room
+    internal abstract class Room
     {
         public int RoomNumber { get; set; }
         public string BedConfiguration { get; set; }
@@ -21,14 +21,11 @@ namespace PRG2_Assignment_Hotel_Guest_Management_System_
             DailyRate = dailyRate;
             IsAvail = isAvail;
         }
-        public virtual double CalculateCharges()
-        {
-            return 0;
-        }
+        public abstract double CalculateCharges();
 
         public override string ToString()
         {
-            return $"{RoomNumber, -15}{BedConfiguration, -15}{DailyRate, -15}{IsAvail, -15}";
+            return base.ToString();
         }
     }
 }

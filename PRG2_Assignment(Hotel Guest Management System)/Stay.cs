@@ -10,7 +10,7 @@ namespace PRG2_Assignment_Hotel_Guest_Management_System_
     {
         public DateTime CheckinDate { get; set; }
         public DateTime CheckoutDate { get; set; }
-        public List<Room> Rooms { get; set; }
+        public List<Room> Rooms { get; set; } = new List<Room>();
         public Stay() { }
         public Stay(DateTime checkinDate, DateTime checkoutDate)
         {
@@ -28,7 +28,7 @@ namespace PRG2_Assignment_Hotel_Guest_Management_System_
         }
         public override string ToString()
         {
-            return base.ToString();
+            return $"{CheckinDate,15:dd/MM/yyyy}{CheckoutDate,15:dd/MM/yyyy}";
         }
     }
 }

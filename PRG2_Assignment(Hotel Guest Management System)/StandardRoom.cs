@@ -29,7 +29,7 @@ namespace PRG2_Assignment_Hotel_Guest_Management_System_
         }
         public override string ToString()
         {
-            return base.ToString();
+            return $"{"Standard", -15}{RoomNumber,-15}{BedConfiguration,-15}{DailyRate,-15}{IsAvail,-15}";
         }
 
     }
