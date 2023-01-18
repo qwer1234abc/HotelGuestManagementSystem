@@ -28,7 +28,7 @@ namespace PRG2_Assignment_Hotel_Guest_Management_System_
         }
         public override string ToString()
         {
-            return $"{CheckinDate,15:dd/MM/yyyy}{CheckoutDate,15:dd/MM/yyyy}";
+            return $"{CheckinDate,-15:dd/MM/yyyy}{CheckoutDate,-15:dd/MM/yyyy}";
         }
     }
 }

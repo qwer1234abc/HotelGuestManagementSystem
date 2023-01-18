@@ -59,6 +59,14 @@ namespace Assignment
                 {
                     ExtendStay(guestList);
                 }
+                else if (userSelect == "7")
+                {
+                    MonthlyCharged();
+                }
+                else if (userSelect == "8")
+                {
+
+                }
                 else if (userSelect == "0")
                 {
                     Console.WriteLine("Thank you please come back again.");
@@ -74,7 +82,7 @@ namespace Assignment
         }
         static void DisplayMenu()
         {
-            Console.WriteLine("--------------Menu---------------\r\n[1] List all guests\r\n[2] List all available rooms\r\n[3] Register guest\r\n[4] Check-in guest\r\n[5] Display stay details of a guest\r\n[6] Extend stay of guest\r\n[0] Exit\r\n---------------------------------\r\n");
+            Console.WriteLine("--------------Menu---------------\r\n[1] List all guests\r\n[2] List all available rooms\r\n[3] Register guest\r\n[4] Check-in guest\r\n[5] Display stay details of a guest\r\n[6] Extend stay of guest\r\n[7] Display charges for monthly and year\r\n[8] Check-out guest\r\n[0] Exit\r\n---------------------------------\r\n");
         }
         static List<Guest> initGuests(List<Guest> guestList)
         {
@@ -119,7 +127,7 @@ namespace Assignment
         static void ListAllGuest(List<Guest> guestList)
         {
 
-            Console.WriteLine($"{"Name",-20}{"Passport Number",-20}{"Check In Date",-20}{"Check Out Date",-20}{"Member Status",-20}{"Member Points",-20}");
+            Console.WriteLine($"{"Name",-20}{"Passport Number",-20}{"Member Status",-20}{"Member Points",-20}{"Checked In", -20}");
             foreach (Guest guest in guestList)
             {
                 Console.WriteLine(guest.ToString());
@@ -141,6 +149,7 @@ namespace Assignment
                         DailyRate = double.Parse(cells[3]),
                         IsAvail = true
                     };
+                    
                     roomList.Add(room);
                 }
                 else if (cells[0] == "Deluxe")
@@ -162,17 +171,44 @@ namespace Assignment
                 bool isCheckedIn = bool.Parse(cells[2]);
                 int roomNumber = int.Parse(cells[5]);
                 int extraRoomNumber = int.TryParse(cells[9], out int result) ? result : -1;
+                var hotelStay = new Stay
+                {
+                    CheckinDate = DateTime.Parse(cells[3]),
+                    CheckoutDate = DateTime.Parse(cells[4]),
+                };
                 if (isCheckedIn)
                 {
                     var room = roomList.Where(x => x.RoomNumber == roomNumber).FirstOrDefault();
                     if (room != null)
                     {
                         room.IsAvail = false;
+                        if (room is StandardRoom)
+                        {
+                            (room as StandardRoom).RequireWifi = bool.Parse(cells[6]);
+                            (room as StandardRoom).RequireBreakfast = bool.Parse(cells[7]);
+                            hotelStay.AddRoom(room);
+                        }
+                        else
+                        {
+                            (room as DeluxeRoom).AdditionBed = bool.Parse(cells[8]);
+                            hotelStay.AddRoom(room);
+                        }
                     }
                     var extraRoom = roomList.Where(x => x.RoomNumber == extraRoomNumber).FirstOrDefault();
                     if (extraRoom != null)
                     {
                         extraRoom.IsAvail = false;
+                        if (room is StandardRoom)
+                        {
+                            (room as StandardRoom).RequireWifi = bool.Parse(cells[10]);
+                            (room as StandardRoom).RequireBreakfast = bool.Parse(cells[11]);
+                            hotelStay.AddRoom(room);
+                        }
+                        else
+                        {
+                            (room as DeluxeRoom).AdditionBed = bool.Parse(cells[12]);
+                            hotelStay.AddRoom(room);
+                        }
                     }
                 }
             }
@@ -324,6 +360,7 @@ namespace Assignment
             if (selectedGuest != null)
             {
                 Stay selectedStay = selectedGuest.HotelStay;
+                Console.WriteLine($"{"Check In", -15}{"Check Out", -15}{"Room Type",-15}{"Room Number",-15}{"Bed Type",-15}{"Daily Rate",-15}{"Availability",-15}");
                 foreach (Room r in selectedStay.Rooms)
                 {
                     Console.WriteLine($"{selectedStay.ToString()}{r.ToString()}");
@@ -359,6 +396,12 @@ namespace Assignment
             {
                 Console.WriteLine("Please enter correct guest.");
             }
+        }
+        static void MonthlyCharged()
+        {
+            Console.Write("Please enter year: ");
+            int inputYear = int.Parse(Console.ReadLine());
+
         }
     }
 }
