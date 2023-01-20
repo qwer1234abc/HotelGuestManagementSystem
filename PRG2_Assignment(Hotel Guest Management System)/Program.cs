@@ -20,7 +20,7 @@ namespace Assignment
             List<Guest> guestList = new List<Guest>();
             List<Room> roomList = new List<Room>();
             initGuests(guestList);
-            initAvailableRooms(roomList);
+            initAvailableRooms(roomList, guestList);
             while (true)
             {
                 DisplayMenu();
@@ -61,11 +61,15 @@ namespace Assignment
                 }
                 else if (userSelect == "7")
                 {
-                    MonthlyCharged();
+                    MonthlyCharged(guestList);
                 }
                 else if (userSelect == "8")
                 {
-
+                    CheckOutGuest(guestList);
+                }
+                else if (userSelect == "9")
+                {
+                    ChangeRoom(guestList, roomList);
                 }
                 else if (userSelect == "0")
                 {
@@ -82,7 +86,7 @@ namespace Assignment
         }
         static void DisplayMenu()
         {
-            Console.WriteLine("--------------Menu---------------\r\n[1] List all guests\r\n[2] List all available rooms\r\n[3] Register guest\r\n[4] Check-in guest\r\n[5] Display stay details of a guest\r\n[6] Extend stay of guest\r\n[7] Display charges for monthly and year\r\n[8] Check-out guest\r\n[0] Exit\r\n---------------------------------\r\n");
+            Console.WriteLine("--------------Menu---------------\r\n[1] List all guests\r\n[2] List all available rooms\r\n[3] Register guest\r\n[4] Check-in guest\r\n[5] Display stay details of a guest\r\n[6] Extend stay of guest\r\n[7] Display charges for monthly and year\r\n[8] Check-out guest\r\n[9] Change Room\r\n[0] Exit\r\n---------------------------------\r\n");
         }
         static List<Guest> initGuests(List<Guest> guestList)
         {
@@ -127,13 +131,13 @@ namespace Assignment
         static void ListAllGuest(List<Guest> guestList)
         {
 
-            Console.WriteLine($"{"Name",-20}{"Passport Number",-20}{"Member Status",-20}{"Member Points",-20}{"Checked In", -20}");
+            Console.WriteLine($"{"Name",-20}{"Passport Number",-20}{"Member Status",-20}{"Member Points",-20}{"Checked In",-20}");
             foreach (Guest guest in guestList)
             {
                 Console.WriteLine(guest.ToString());
             }
         }
-        static List<Room> initAvailableRooms(List<Room> roomList)
+        static List<Room> initAvailableRooms(List<Room> roomList, List<Guest> guestList)
         {
             string[] csvLines1 = File.ReadAllLines("Rooms.csv");
             string[] csvLines2 = File.ReadAllLines("Stays.csv");
@@ -149,7 +153,7 @@ namespace Assignment
                         DailyRate = double.Parse(cells[3]),
                         IsAvail = true
                     };
-                    
+
                     roomList.Add(room);
                 }
                 else if (cells[0] == "Deluxe")
@@ -171,43 +175,75 @@ namespace Assignment
                 bool isCheckedIn = bool.Parse(cells[2]);
                 int roomNumber = int.Parse(cells[5]);
                 int extraRoomNumber = int.TryParse(cells[9], out int result) ? result : -1;
+                var guest = guestList.Where(x => x.PassportNum == cells[1]).FirstOrDefault();
+
                 var hotelStay = new Stay
                 {
                     CheckinDate = DateTime.Parse(cells[3]),
                     CheckoutDate = DateTime.Parse(cells[4]),
                 };
-                if (isCheckedIn)
+                var room = roomList.Where(x => x.RoomNumber == roomNumber).FirstOrDefault();
+                if (room != null)
                 {
-                    var room = roomList.Where(x => x.RoomNumber == roomNumber).FirstOrDefault();
-                    if (room != null)
+                    if (room is StandardRoom)
                     {
-                        room.IsAvail = false;
-                        if (room is StandardRoom)
+                        (room as StandardRoom).RequireWifi = bool.Parse(cells[6]);
+                        (room as StandardRoom).RequireBreakfast = bool.Parse(cells[7]);
+                        hotelStay.AddRoom(room);
+                        if (guest != null)
                         {
-                            (room as StandardRoom).RequireWifi = bool.Parse(cells[6]);
-                            (room as StandardRoom).RequireBreakfast = bool.Parse(cells[7]);
-                            hotelStay.AddRoom(room);
+                            guest.HotelStay = hotelStay;
                         }
-                        else
+                        if (isCheckedIn)
                         {
-                            (room as DeluxeRoom).AdditionBed = bool.Parse(cells[8]);
-                            hotelStay.AddRoom(room);
+                            room.IsAvail = false;
+                        }
+
+                    }
+                    else
+                    {
+                        (room as DeluxeRoom).AdditionBed = bool.Parse(cells[8]);
+                        hotelStay.AddRoom(room);
+                        if (guest != null)
+                        {
+                            guest.HotelStay = hotelStay;
+                        }
+                        if (isCheckedIn)
+                        {
+                            room.IsAvail = false;
                         }
                     }
-                    var extraRoom = roomList.Where(x => x.RoomNumber == extraRoomNumber).FirstOrDefault();
-                    if (extraRoom != null)
+                }
+                var extraRoom = roomList.Where(x => x.RoomNumber == extraRoomNumber).FirstOrDefault();
+                if (extraRoom != null)
+                {
+                    extraRoom.IsAvail = false;
+                    if (extraRoom is StandardRoom)
                     {
-                        extraRoom.IsAvail = false;
-                        if (room is StandardRoom)
+                        (extraRoom as StandardRoom).RequireWifi = bool.Parse(cells[10]);
+                        (extraRoom as StandardRoom).RequireBreakfast = bool.Parse(cells[11]);
+                        hotelStay.AddRoom(extraRoom);
+                        if (guest != null)
                         {
-                            (room as StandardRoom).RequireWifi = bool.Parse(cells[10]);
-                            (room as StandardRoom).RequireBreakfast = bool.Parse(cells[11]);
-                            hotelStay.AddRoom(room);
+                            guest.HotelStay = hotelStay;
                         }
-                        else
+                        if (isCheckedIn)
                         {
-                            (room as DeluxeRoom).AdditionBed = bool.Parse(cells[12]);
-                            hotelStay.AddRoom(room);
+                            extraRoom.IsAvail = false;
+                        }
+
+                    }
+                    else
+                    {
+                        (extraRoom as DeluxeRoom).AdditionBed = bool.Parse(cells[12]);
+                        hotelStay.AddRoom(extraRoom);
+                        if (guest != null)
+                        {
+                            guest.HotelStay = hotelStay;
+                        }
+                        if (isCheckedIn)
+                        {
+                            extraRoom.IsAvail = false;
                         }
                     }
                 }
@@ -217,7 +253,7 @@ namespace Assignment
 
         static void ListAllAvailableRooms(List<Room> roomList)
         {
-           
+
             Console.WriteLine($"{"Room Type",-15}{"Room Number",-15}{"Bed Type",-15}{"Daily Rate",-15}{"Availability",-15}");
             foreach (Room room in roomList)
             {
@@ -257,98 +293,113 @@ namespace Assignment
             var selectedGuest = guestList.Where(x => x.PassportNum.ToLower() == guestSelection.ToLower()).FirstOrDefault();
             if (selectedGuest != null)
             {
-                // Prompt user to enter check-in and check-out date
-                Console.Write("Enter check-in date (dd/mm/yyyy):");
-                DateTime checkinDate = DateTime.ParseExact(Console.ReadLine(), "dd/MM/yyyy", CultureInfo.InvariantCulture);
-                Console.Write("Enter check-out date (dd/mm/yyyy):");
-                DateTime checkoutDate = DateTime.ParseExact(Console.ReadLine(), "dd/MM/yyyy", CultureInfo.InvariantCulture);
-                Stay selectedStay = new Stay(checkinDate, checkoutDate);
-                while (true)
+                if (!selectedGuest.IsCheckedin)
                 {
-                    ListAllAvailableRooms(roomList);
-                    Console.Write("Select room by entering room number: ");
-                    int roomSelection = Convert.ToInt32(Console.ReadLine());
-                    Room selectedRoom = roomList.Where(x => x.RoomNumber == roomSelection).FirstOrDefault();
-                    if (selectedRoom != null)
-                    {
-                        if (selectedRoom is StandardRoom)
-                        {
-                            Console.Write("Do you require wifi [Y/N]: ");
-                            string wifi = Console.ReadLine().ToUpper();
-                            if (wifi == "Y")
-                            {
-                                (selectedRoom as StandardRoom).RequireWifi = true;
-                            }
-                            else if (wifi == "N")
-                            {
-                                (selectedRoom as StandardRoom).RequireWifi = false;
 
-                            }
-                            Console.Write("Do you require breakfast [Y/N]: ");
-                            string breakfast = Console.ReadLine().ToUpper();
-                            if (breakfast == "Y")
-                            {
-                                (selectedRoom as StandardRoom).RequireBreakfast = true;
-                            }
-                            else if (breakfast == "N")
-                            {
-                                (selectedRoom as StandardRoom).RequireBreakfast = false;
-                            }
-                            selectedRoom.IsAvail = false;
-                            selectedStay.AddRoom(selectedRoom);
-                            Console.Write("Do you want to select another room [Y/N]: ");
-                            string anotherRoom = Console.ReadLine().ToUpper();
-                            if (anotherRoom == "Y")
-                            {
-                                continue;
-                            }
-                            else if (anotherRoom == "N")
-                            {
-                                selectedGuest.HotelStay = selectedStay;
-                                selectedGuest.IsCheckedin = true;
-                                Console.WriteLine("Check in successful.");
-                                break;
-                            }
-                        }
-                        else if (selectedRoom is DeluxeRoom)
-                        {
-                            DeluxeRoom selectedDeluxeRoom = (DeluxeRoom)selectedRoom;
-                            Console.Write("Do you require extra bed [Y/N]: ");
-                            string extrabed = Console.ReadLine().ToUpper();
-                            if (extrabed == "Y")
-                            {
-                                selectedDeluxeRoom.AdditionBed = true;
-                            }
-                            else if (extrabed == "N")
-                            {
-                                selectedDeluxeRoom.AdditionBed = false;
-                            }
-                            selectedDeluxeRoom.IsAvail = false;
-                            selectedStay.AddRoom(selectedDeluxeRoom);
-                            Console.Write("Do you want to select another room [Y/N]: ");
-                            string anotherRoom = Console.ReadLine().ToUpper();
-                            if (anotherRoom == "Y")
-                            {
-                                continue;
-                            }
-                            else if (anotherRoom == "N")
-                            {
-                                selectedGuest.HotelStay = selectedStay;
-                                selectedGuest.IsCheckedin = true;
-                                Console.WriteLine("Check in successful.");
-                                break;
-                            }
-                        }
-                    }
-                    else if (selectedRoom == null)
+                    // Prompt user to enter check-in and check-out date
+                    Console.Write("Enter check-in date (dd/mm/yyyy): ");
+                    DateTime checkinDate = DateTime.ParseExact(Console.ReadLine(), "dd/MM/yyyy", CultureInfo.InvariantCulture);
+                    Console.Write("Enter check-out date (dd/mm/yyyy): ");
+                    DateTime checkoutDate = DateTime.ParseExact(Console.ReadLine(), "dd/MM/yyyy", CultureInfo.InvariantCulture);
+                    Stay selectedStay = new Stay(checkinDate, checkoutDate);
+                    while (true)
                     {
-                        Console.WriteLine("Please enter the correct room.");
+                        ListAllAvailableRooms(roomList);
+                        Console.Write("Select room by entering room number: ");
+                        int roomSelection = Convert.ToInt32(Console.ReadLine());
+                        Room selectedRoom = roomList.Where(x => x.RoomNumber == roomSelection).FirstOrDefault();
+                        if (selectedRoom != null)
+                        {
+                            if (selectedRoom.IsAvail)
+                            {
+
+                                if (selectedRoom is StandardRoom)
+                                {
+                                    Console.Write("Do you require wifi [Y/N]: ");
+                                    string wifi = Console.ReadLine().ToUpper();
+                                    if (wifi == "Y")
+                                    {
+                                        (selectedRoom as StandardRoom).RequireWifi = true;
+                                    }
+                                    else if (wifi == "N")
+                                    {
+                                        (selectedRoom as StandardRoom).RequireWifi = false;
+
+                                    }
+                                    Console.Write("Do you require breakfast [Y/N]: ");
+                                    string breakfast = Console.ReadLine().ToUpper();
+                                    if (breakfast == "Y")
+                                    {
+                                        (selectedRoom as StandardRoom).RequireBreakfast = true;
+                                    }
+                                    else if (breakfast == "N")
+                                    {
+                                        (selectedRoom as StandardRoom).RequireBreakfast = false;
+                                    }
+                                    selectedRoom.IsAvail = false;
+                                    selectedStay.AddRoom(selectedRoom);
+                                    Console.Write("Do you want to select another room [Y/N]: ");
+                                    string anotherRoom = Console.ReadLine().ToUpper();
+                                    if (anotherRoom == "Y")
+                                    {
+                                        continue;
+                                    }
+                                    else if (anotherRoom == "N")
+                                    {
+                                        selectedGuest.HotelStay = selectedStay;
+                                        selectedGuest.IsCheckedin = true;
+                                        Console.WriteLine("Check in successful.");
+                                        break;
+                                    }
+                                }
+                                else if (selectedRoom is DeluxeRoom)
+                                {
+                                    Console.Write("Do you require extra bed [Y/N]: ");
+                                    string extrabed = Console.ReadLine().ToUpper();
+                                    if (extrabed == "Y")
+                                    {
+                                        (selectedRoom as DeluxeRoom).AdditionBed = true;
+                                    }
+                                    else if (extrabed == "N")
+                                    {
+                                        (selectedRoom as DeluxeRoom).AdditionBed = false;
+                                    }
+                                    selectedRoom.IsAvail = false;
+                                    selectedStay.AddRoom(selectedRoom);
+                                    Console.Write("Do you want to select another room [Y/N]: ");
+                                    string anotherRoom = Console.ReadLine().ToUpper();
+                                    if (anotherRoom == "Y")
+                                    {
+                                        continue;
+                                    }
+                                    else if (anotherRoom == "N")
+                                    {
+                                        selectedGuest.HotelStay = selectedStay;
+                                        selectedGuest.IsCheckedin = true;
+                                        Console.WriteLine("Check in successful.");
+                                        break;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Room is not available.");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Room not found.");
+                        }
                     }
                 }
+                else
+                {
+                    Console.WriteLine("Guest is already checked in.");
+                }
             }
-            else if (selectedGuest == null)
+            else
             {
-                Console.WriteLine("Please enter the correct guest.");
+                Console.WriteLine("Guest not found.");
             }
         }
         static void DisplayStayDetails(List<Guest> guestList)
@@ -360,15 +411,18 @@ namespace Assignment
             if (selectedGuest != null)
             {
                 Stay selectedStay = selectedGuest.HotelStay;
-                Console.WriteLine($"{"Check In", -15}{"Check Out", -15}{"Room Type",-15}{"Room Number",-15}{"Bed Type",-15}{"Daily Rate",-15}{"Availability",-15}");
+                Console.WriteLine($"{"Check In",-15}{"Check Out",-15}{"Room Type",-15}{"Room Number",-15}{"Bed Type",-15}{"Daily Rate",-15}{"Availability",-15}");
                 foreach (Room r in selectedStay.Rooms)
                 {
-                    Console.WriteLine($"{selectedStay.ToString()}{r.ToString()}");
+                    if (!r.IsAvail)
+                    {
+                        Console.WriteLine($"{selectedStay.ToString()}{r.ToString()}");
+                    }
                 }
             }
-            else if (selectedGuest == null)
+            else
             {
-                Console.WriteLine("Please enter correct guest.");
+                Console.WriteLine("Guest not found.");
             }
         }
         static void ExtendStay(List<Guest> guestList)
@@ -379,8 +433,9 @@ namespace Assignment
             var selectedGuest = guestList.Where(x => x.PassportNum.ToLower() == guestSelection.ToLower()).FirstOrDefault();
             if (selectedGuest != null)
             {
-                if (selectedGuest.IsCheckedin == true)
+                if (selectedGuest.IsCheckedin)
                 {
+                    Console.WriteLine($"Original chechout date: {selectedGuest.HotelStay.CheckoutDate:dd/MM/yyyy}");
                     Console.Write("Enter number of days to extend: ");
                     int extendDays = int.Parse(Console.ReadLine());
                     Stay selectedStay = selectedGuest.HotelStay;
@@ -392,16 +447,221 @@ namespace Assignment
                     Console.WriteLine("Guest is not checked in.");
                 }
             }
-            else if (selectedGuest == null)
+            else
             {
-                Console.WriteLine("Please enter correct guest.");
+                Console.WriteLine("Guest not found.");
             }
         }
-        static void MonthlyCharged()
+        static void MonthlyCharged(List<Guest> guestList)
         {
             Console.Write("Please enter year: ");
             int inputYear = int.Parse(Console.ReadLine());
+            Console.WriteLine();
+            Dictionary<string, double> monthlyAmounts = new Dictionary<string, double>();
+            double totalAmount = 0;
 
+            //loop through guests
+            foreach (Guest guest in guestList)
+            {
+                //retrieve stay object
+                Stay stay = guest.HotelStay;
+                //check if guest has checked out and check out date is in the input year
+                if (stay != null && stay.CheckoutDate.Year == inputYear)
+                {
+                    //determine the month of check out
+                    int month = stay.CheckoutDate.Month;
+                    //initialize monthly amount
+                    double monthlyAmount = 0;
+
+                    //loop through rooms in stay
+                    monthlyAmount += stay.CalculateTotal();
+
+                    //add monthly amount to total amount
+                    totalAmount += monthlyAmount;
+
+                    //add monthly amount to dictionary with month as key
+                    string monthName = new DateTime(inputYear, month, 1).ToString("MMMM");
+                    if (monthlyAmounts.ContainsKey(monthName))
+                    {
+                        monthlyAmounts[monthName] += monthlyAmount;
+                    }
+                    else
+                    {
+                        monthlyAmounts.Add(monthName, monthlyAmount);
+                    }
+                }
+            }
+
+            //display monthly charged amount breakdown
+            Console.WriteLine("Monthly charged amount breakdown for {0}:", inputYear);
+            foreach (var item in monthlyAmounts)
+            {
+                Console.WriteLine("{0} {1}: {2}", item.Key, inputYear, item.Value);
+            }
+
+            //display total charged amount
+            Console.WriteLine("Total: {0}", totalAmount);
+        }
+        static void CheckOutGuest(List<Guest> guestList)
+        {
+            ListAllGuest(guestList);
+            Console.Write("Select guess by entering passport number: ");
+            string? guestSelection = Console.ReadLine();
+            var selectedGuest = guestList.Where(x => x.PassportNum.ToLower() == guestSelection.ToLower()).FirstOrDefault();
+            if (selectedGuest != null)
+            {
+                if (selectedGuest.IsCheckedin)
+                {
+
+                    //display the total bill amount
+                    Membership selectedMembership = selectedGuest.Member;
+                    Console.WriteLine($"{"Status",-10}{"Points",-10}");
+                    Console.WriteLine($"{selectedMembership.ToString()}");
+                    if (selectedMembership.Status == "Silver" || selectedMembership.Status == "Gold")
+                    {
+                        Console.Write("Enter amount of points to offset: ");
+                        int selectedOffset = int.Parse(Console.ReadLine());
+                        selectedMembership.RedeemPoints(selectedOffset);
+                        //display the final total bill amount
+                        Console.Write("Please press any key to make payment.");
+                        Console.ReadLine();
+                        //selectedMembership.EarnPoints(finalbill)
+                        if (selectedMembership.Points >= 200)
+                        {
+                            selectedMembership.Status = "Gold";
+                        }
+                        else if (selectedMembership.Points >= 100)
+                        {
+                            selectedMembership.Status = "Silver";
+                        }
+                        else
+                        {
+                            selectedMembership.Status = "Ordinary";
+                        }
+                        selectedGuest.IsCheckedin = false;
+                        Console.WriteLine("Checkout success!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Membership status is not Gold or Silver.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Guest is not checked in.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Guest not found.");
+            }
+        }
+        static void ChangeRoom(List<Guest> guestList, List<Room> roomList)
+        {
+            ListAllGuest(guestList);
+            Console.Write("Select guess by entering passport number: ");
+            string? guestSelection = Console.ReadLine();
+            var selectedGuest = guestList.Where(x => x.PassportNum.ToLower() == guestSelection.ToLower()).FirstOrDefault();
+            if (selectedGuest != null)
+            {
+                if (selectedGuest.IsCheckedin)
+                {
+                    ListAllAvailableRooms(roomList);
+                    Console.Write("Enter current room and enter new room to change to seperated by ',': ");
+                    string[] userInput = Console.ReadLine().Split(",");
+                    int currentRoom = int.Parse(userInput[0]);
+                    int newRoom = int.Parse(userInput[1]);
+                    List<int> guestRooms = new List<int>();
+                    //Room nowRoom = roomList.Where(x => x.RoomNumber == currentRoom).FirstOrDefault();
+                    Room selectedRoom = roomList.Where(x => x.RoomNumber == newRoom).FirstOrDefault();
+                    Room nowRoom = roomList.Where(x => x.RoomNumber == currentRoom).FirstOrDefault();
+
+                    Stay selectedStay = new Stay(selectedGuest.HotelStay.CheckinDate, selectedGuest.HotelStay.CheckoutDate);
+                    foreach (Room r in selectedStay.Rooms)
+                    {
+                        guestRooms.Add(r.RoomNumber);
+                    }
+                    if (guestRooms.Contains(currentRoom))
+                    {
+                        if (selectedRoom != null)
+                        {
+                            if (selectedRoom.IsAvail)
+                            {
+                                if (selectedRoom is StandardRoom)
+                                {
+                                    Console.Write("Do you require wifi [Y/N]: ");
+                                    string wifi = Console.ReadLine().ToUpper();
+                                    if (wifi == "Y")
+                                    {
+                                        (selectedRoom as StandardRoom).RequireWifi = true;
+                                    }
+                                    else if (wifi == "N")
+                                    {
+                                        (selectedRoom as StandardRoom).RequireWifi = false;
+
+                                    }
+                                    Console.Write("Do you require breakfast [Y/N]: ");
+                                    string breakfast = Console.ReadLine().ToUpper();
+                                    if (breakfast == "Y")
+                                    {
+                                        (selectedRoom as StandardRoom).RequireBreakfast = true;
+                                    }
+                                    else if (breakfast == "N")
+                                    {
+                                        (selectedRoom as StandardRoom).RequireBreakfast = false;
+                                    }
+                                    selectedRoom.IsAvail = false;
+                                    if (nowRoom != null)
+                                    {
+                                        nowRoom.IsAvail = true;
+                                        selectedStay.RemoveRoom(nowRoom);
+                                    }
+                                    selectedStay.AddRoom(selectedRoom);
+                                    Console.WriteLine($"Room changed from {nowRoom.RoomNumber} to {selectedRoom.RoomNumber}");
+                                }
+                                else if (selectedRoom is DeluxeRoom)
+                                {
+                                    Console.Write("Do you require extra bed [Y/N]: ");
+                                    string extrabed = Console.ReadLine().ToUpper();
+                                    if (extrabed == "Y")
+                                    {
+                                        (selectedRoom as DeluxeRoom).AdditionBed = true;
+                                    }
+                                    else if (extrabed == "N")
+                                    {
+                                        (selectedRoom as DeluxeRoom).AdditionBed = false;
+                                    }
+                                    selectedRoom.IsAvail = false;
+                                    if (nowRoom != null)
+                                    {
+                                        nowRoom.IsAvail = true;
+                                        selectedStay.RemoveRoom(nowRoom);
+                                    }
+                                    selectedStay.AddRoom(selectedRoom);
+                                    Console.WriteLine($"Room changed from {nowRoom.RoomNumber} to {selectedRoom.RoomNumber}");
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Room is not available.");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Room not found.");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Guest has not checked into this room.");
+                    }
+
+                }
+                else
+                {
+                    Console.WriteLine("Guest is not checked in.");
+                }
+            }
         }
     }
 }

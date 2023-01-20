@@ -17,11 +17,11 @@ namespace PRG2_Assignment_Hotel_Guest_Management_System_
         public override double CalculateCharges()
         {
             double totalCost = DailyRate;
-            if (RequireWifi == true)
+            if (RequireWifi)
             {
                 totalCost += 10;
             }
-            else if (RequireBreakfast == true)
+            else if (RequireBreakfast)
             {
                 totalCost += 20;
             }
@@ -29,7 +29,7 @@ namespace PRG2_Assignment_Hotel_Guest_Management_System_
         }
         public override string ToString()
         {
-            return $"{"Standard", -15}{RoomNumber,-15}{BedConfiguration,-15}{DailyRate,-15}{IsAvail,-15}";
+            return $"{"Standard", -15}{RoomNumber,-15}{BedConfiguration,-15}{DailyRate,-15}{(IsAvail? "Available":"Unavailable"),-15}";
         }
 
     }

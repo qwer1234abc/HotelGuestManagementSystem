@@ -16,17 +16,24 @@ namespace PRG2_Assignment_Hotel_Guest_Management_System_
             Status = status;
             Points = points;
         }
-        public void EarnPoints(double x)
+        public void EarnPoints(double finalBill)
         {
-
+            //int Earnings = int.Parse(finalBill);
         }
-        public bool RedeemPoints(int x)
+        public bool RedeemPoints(int offset)
         {
-            return true;
+            if (Points >= offset)
+            {
+                Points -= offset;
+                Console.WriteLine("Redemption successful!");
+                return true;
+            }
+            Console.WriteLine("Insufficient Points.");
+            return false;
         }
         public override string ToString()
         {
-            return base.ToString();
+            return $"{Status,-10}{Points,-10}";
         }
     }
 }

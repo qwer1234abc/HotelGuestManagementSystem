@@ -21,10 +21,20 @@ namespace PRG2_Assignment_Hotel_Guest_Management_System_
         {
             Rooms.Add(r);
         }
+        // extra feature method
+        public void RemoveRoom(Room r)
+        {
+            Rooms.Remove(r);
+        }
         public double CalculateTotal()
         {
+            double total = 0;
             int dayStayed = CheckoutDate.Subtract(CheckinDate).Days;
-            return 3;
+            foreach(Room room in Rooms)
+            {
+                total += room.CalculateCharges() * dayStayed;
+            }
+            return total;
         }
         public override string ToString()
         {

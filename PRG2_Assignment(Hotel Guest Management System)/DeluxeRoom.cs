@@ -16,7 +16,7 @@ namespace PRG2_Assignment_Hotel_Guest_Management_System_
         public override double CalculateCharges()
         {
             double TotalCost = DailyRate;
-            if (AdditionBed == true)
+            if (AdditionBed)
             {
                 TotalCost += 25;
             }
@@ -24,7 +24,7 @@ namespace PRG2_Assignment_Hotel_Guest_Management_System_
         }
         public override string ToString()
         {
-            return $"{"Deluxe",-15}{RoomNumber,-15}{BedConfiguration,-15}{DailyRate,-15}{IsAvail,-15}";
+            return $"{"Deluxe",-15}{RoomNumber,-15}{BedConfiguration,-15}{DailyRate,-15}{(IsAvail ? "Available" : "Unavailable"),-15}";
         }
     }
 }
