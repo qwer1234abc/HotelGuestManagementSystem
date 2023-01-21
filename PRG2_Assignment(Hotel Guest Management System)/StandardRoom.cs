@@ -21,7 +21,7 @@ namespace PRG2_Assignment_Hotel_Guest_Management_System_
             {
                 totalCost += 10;
             }
-            else if (RequireBreakfast)
+            if (RequireBreakfast)
             {
                 totalCost += 20;
             }
@@ -29,7 +29,7 @@ namespace PRG2_Assignment_Hotel_Guest_Management_System_
         }
         public override string ToString()
         {
-            return $"{"Standard", -15}{RoomNumber,-15}{BedConfiguration,-15}{DailyRate,-15}{(IsAvail? "Available":"Unavailable"),-15}";
+            return $"{"Standard", -15}{RoomNumber,-15}{BedConfiguration,-15}{DailyRate,-15:C0}{(IsAvail? "Available":"Unavailable"),-15}{RequireWifi}{RequireBreakfast}";
         }
 
     }
