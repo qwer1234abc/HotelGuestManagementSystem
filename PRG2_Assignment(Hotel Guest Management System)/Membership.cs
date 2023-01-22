@@ -18,17 +18,27 @@ namespace PRG2_Assignment_Hotel_Guest_Management_System_
         }
         public void EarnPoints(double finalBill)
         {
-            //int Earnings = int.Parse(finalBill);
+            Points += (int)Math.Round(finalBill/10);
+            if (Points >= 200)
+            {
+                Status = "Gold";
+            }
+            else if (Points >= 100)
+            {
+                Status = "Silver";
+            }
+            else
+            {
+                Status = "Ordinary";
+            }
         }
         public bool RedeemPoints(int offset)
         {
             if (Points >= offset)
             {
                 Points -= offset;
-                Console.WriteLine("Redemption successful!");
                 return true;
             }
-            Console.WriteLine("Insufficient Points.");
             return false;
         }
         public override string ToString()

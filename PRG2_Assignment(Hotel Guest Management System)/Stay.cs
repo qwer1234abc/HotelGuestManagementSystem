@@ -21,6 +21,10 @@ namespace PRG2_Assignment_Hotel_Guest_Management_System_
         {
             Rooms.Add(r);
         }
+        public void AddExtraRoom(Room r)
+        {
+            Rooms.Add(r);
+        }
         // extra feature method
         public void RemoveRoom(Room r)
         {
