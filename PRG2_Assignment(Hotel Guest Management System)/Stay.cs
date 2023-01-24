@@ -10,7 +10,7 @@ namespace PRG2_Assignment_Hotel_Guest_Management_System_
     {
         public DateTime CheckinDate { get; set; }
         public DateTime CheckoutDate { get; set; }
-        public List<Room> Rooms { get; set; } = new List<Room>();
+        public List<Room> RoomList { get; set; } = new List<Room>();
         public Stay() { }
         public Stay(DateTime checkinDate, DateTime checkoutDate)
         {
@@ -19,18 +19,18 @@ namespace PRG2_Assignment_Hotel_Guest_Management_System_
         }
         public void AddRoom(Room r)
         {
-            Rooms.Add(r);
+            RoomList.Add(r);
         }
         // extra feature method
         public void RemoveRoom(Room r)
         {
-            Rooms.Remove(r);
+            RoomList.Remove(r);
         }
         public double CalculateTotal()
         {
             double total = 0;
             int dayStayed = CheckoutDate.Subtract(CheckinDate).Days;
-            foreach(Room room in Rooms)
+            foreach(Room room in RoomList)
             {
                 total += room.CalculateCharges() * dayStayed;
             }

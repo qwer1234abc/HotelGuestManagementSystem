@@ -47,7 +47,6 @@ namespace Assignment
                 }
                 else if (userSelect == "4")
                 {
-
                     //Question 4
                     CheckInGuest(guestList, roomList);
                     Console.WriteLine();
@@ -348,7 +347,6 @@ namespace Assignment
                                 {
                                     while (true)
                                     {
-
                                         Console.Write("Do you require wifi [Y/N]: ");
                                         string wifi = Console.ReadLine().ToUpper();
                                         if (wifi == "Y")
@@ -505,7 +503,7 @@ namespace Assignment
             {
                 Stay selectedStay = selectedGuest.HotelStay;
                 Console.WriteLine($"{"Check In",-15}{"Check Out",-15}{"Room Type",-15}{"Room Number",-15}{"Bed Type",-15}{"Daily Rate",-15}{"Availability",-15}");
-                foreach (Room r in selectedStay.Rooms)
+                foreach (Room r in selectedStay.RoomList)
                 {
                     if (!r.IsAvail && selectedGuest.IsCheckedin)
                     {
@@ -593,7 +591,7 @@ namespace Assignment
 
             for (int i = 1; i <= 12; i++)
             {
-                string monthName = new DateTime(inputYear, i, 1).ToString("MMMM");
+                string monthName = new DateTime(inputYear, i, 1).ToString("MMM");
                 monthlyAmounts.Add(monthName, 0);
             }
 
@@ -606,16 +604,15 @@ namespace Assignment
                     double monthlyAmount = 0;
                     monthlyAmount += stay.CalculateTotal();
                     totalAmount += monthlyAmount;
-                    string monthName = new DateTime(inputYear, month, 1).ToString("MMMM");
+                    string monthName = new DateTime(inputYear, month, 1).ToString("MMM");
                     monthlyAmounts[monthName] += monthlyAmount;
                 }
             }
-            Console.WriteLine($"Monthly charged amount breakdown for {inputYear}:");
             foreach (var item in monthlyAmounts)
             {
                 Console.WriteLine($"{item.Key} {inputYear}: {item.Value:C2}");
             }
-            Console.WriteLine($"Total: {totalAmount:C2}");
+            Console.WriteLine($"\nTotal: {totalAmount:C2}");
         }
         static void CheckOutGuest(List<Guest> guestList)
         {
@@ -629,61 +626,75 @@ namespace Assignment
                 {
                     Stay selectedStay = selectedGuest.HotelStay;
                     double finalbill = selectedStay.CalculateTotal();
-                    Console.WriteLine($"Final bill: {finalbill:C2}");
+                    Console.WriteLine($"\nFinal bill: {finalbill:C2}");
                     Membership selectedMembership = selectedGuest.Member;
                     Console.WriteLine($"{"Status",-10}{"Points",-10}");
                     Console.WriteLine($"{selectedMembership.ToString()}");
                     if (selectedMembership.Status == "Silver" || selectedMembership.Status == "Gold")
                     {
-                        int selectedOffset;
                         while (true)
                         {
-                            try
+                            int selectedOffset;
+                            while (true)
                             {
-                                Console.Write("Enter amount of points to offset: ");
-                                selectedOffset = int.Parse(Console.ReadLine());
-                                if (selectedOffset >= 0)
+                                try
                                 {
+                                    Console.Write("Enter amount of points to offset: ");
+                                    selectedOffset = int.Parse(Console.ReadLine());
+                                    if (selectedOffset >= 0)
+                                    {
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("\nPlease enter a positive number.\n");
+                                    }
+                                }
+                                catch
+                                {
+                                    Console.WriteLine("\nPlease enter a valid number.\n");
+                                }
+                            }
+
+                            if (selectedMembership.RedeemPoints(selectedOffset))
+                            {
+                                double deductedFinalbill = finalbill - selectedOffset;
+                                if (deductedFinalbill >= 0)
+                                {
+
+                                    Console.WriteLine("Redemption successful!");
+                                    Console.WriteLine($"Final bill after deduction: {deductedFinalbill:C2}");
+                                    Console.Write("Please press any key to make payment.");
+                                    Console.ReadKey();
+                                    selectedMembership.EarnPoints(deductedFinalbill);
+                                    selectedGuest.IsCheckedin = false;
+                                    foreach (Room r in selectedStay.RoomList)
+                                    {
+                                        r.IsAvail = true;
+                                    }
+                                    Console.WriteLine("\nCheckout success!");
                                     break;
                                 }
                                 else
                                 {
-                                    Console.WriteLine("\nPlease enter a positive number.\n");
+                                    selectedMembership.Points += selectedOffset;
+                                    Console.WriteLine("\nRedemption of points exceeds bill. Please re-enter.\n");
                                 }
                             }
-                            catch
+                            else
                             {
-                                Console.WriteLine("\nPlease enter a positive number.\n");
+                                Console.WriteLine("\nInsufficient points. Please re-enter.\n");
                             }
-                        }
-                        if (selectedMembership.RedeemPoints(selectedOffset))
-                        {
-                            double deductedFinalbill = finalbill - selectedOffset;
-                            Console.WriteLine("Redemption successful!");
-                            Console.WriteLine($"Final bill after deduction: {deductedFinalbill:C2}");
-                            Console.Write("Please press any key to make payment.");
-                            Console.ReadLine();
-                            selectedMembership.EarnPoints(deductedFinalbill);
-                            selectedGuest.IsCheckedin = false;
-                            foreach (Room r in selectedStay.Rooms)
-                            {
-                                r.IsAvail = true;
-                            }
-                            Console.WriteLine("Checkout success!");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Insufficient points. \r\nPlease re-enter.");
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Membership status is not Gold or Silver.");
+                        Console.WriteLine("\nMembership status is not Gold or Silver, no redemption of points.");
                         Console.Write("Please press any key to make payment.");
-                        Console.ReadLine();
+                        Console.ReadKey();
                         selectedMembership.EarnPoints(finalbill);
                         selectedGuest.IsCheckedin = false;
-                        foreach (Room r in selectedStay.Rooms)
+                        foreach (Room r in selectedStay.RoomList)
                         {
                             r.IsAvail = true;
                         }
@@ -714,7 +725,7 @@ namespace Assignment
                     Stay selectedStay = selectedGuest.HotelStay;
                     Console.WriteLine("Current room(s) of guest: ");
                     Console.WriteLine($"{"Room Type",-15}{"Room Number",-15}{"Bed Type",-15}{"Daily Rate",-15}{"Availability",-15}");
-                    foreach (Room r in selectedStay.Rooms)
+                    foreach (Room r in selectedStay.RoomList)
                     {
                         if (!r.IsAvail && selectedGuest.IsCheckedin)
                         {
@@ -726,13 +737,12 @@ namespace Assignment
                     int currentRoom;
                     int newRoom;
                     List<int> guestRooms = new List<int>();
-                    foreach (Room r in selectedStay.Rooms)
+                    foreach (Room r in selectedStay.RoomList)
                     {
                         guestRooms.Add(r.RoomNumber);
                     }
                     while (true)
                     {
-
                         try
                         {
                             Console.Write("Enter current room and enter new room to change to seperated by ',': ");
@@ -754,7 +764,6 @@ namespace Assignment
                             Console.WriteLine("\nInvalid input. Please enter current room and new room separated by ','.\n");
                         }
                     }
-                    //Room nowRoom = roomList.Where(x => x.RoomNumber == currentRoom).FirstOrDefault();
                     Room nowRoom = roomList.Where(x => x.RoomNumber == currentRoom).FirstOrDefault();
                     Room selectedRoom = roomList.Where(x => x.RoomNumber == newRoom).FirstOrDefault();
                     if (selectedRoom != null)
