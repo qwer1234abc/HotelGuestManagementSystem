@@ -29,8 +29,7 @@ namespace PRG2_Assignment_Hotel_Guest_Management_System_
         }
         public override string ToString()
         {
-            return $"{"Standard", -15}{RoomNumber,-15}{BedConfiguration,-15}{DailyRate,-15:C0}{(IsAvail? "Available":"Unavailable"),-15}{RequireWifi}{RequireBreakfast}";
+            return $"{"Standard", -15}{RoomNumber,-15}{BedConfiguration,-15}{DailyRate,-15:C0}{(IsAvail? "Available":"Unavailable"),-15}";
         }
-
     }
 }

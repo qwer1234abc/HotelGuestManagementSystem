@@ -111,7 +111,7 @@ namespace Assignment
             for (int j = 1; j < csvLines2.Length; j++)
             {
                 string[] cells = csvLines2[j].Split(',');
-                var guest = guestList.Where(x => x.PassportNum == cells[1]).FirstOrDefault();
+                var guest = guestList.FirstOrDefault(x => x.PassportNum == cells[1]);
                 if (guest != null)
                 {
                     guest.IsCheckedin = bool.Parse(cells[2]);
@@ -174,7 +174,7 @@ namespace Assignment
                 bool isCheckedIn = bool.Parse(cells[2]);
                 int roomNumber = int.Parse(cells[5]);
                 int extraRoomNumber = int.TryParse(cells[9], out int result) ? result : -1;
-                var guest = guestList.Where(x => x.PassportNum == cells[1]).FirstOrDefault();
+                var guest = guestList.FirstOrDefault(x => x.PassportNum == cells[1]);
 
                 var hotelStay = new Stay
                 {
@@ -219,7 +219,6 @@ namespace Assignment
                         {
                             extraRoom.IsAvail = false;
                         }
-
                     }
                     else
                     {
@@ -274,7 +273,7 @@ namespace Assignment
             ListAllGuest(guestList);
             Console.Write("Select guess by entering passport number: ");
             string? guestSelection = Console.ReadLine();
-            var selectedGuest = guestList.Where(x => x.PassportNum.ToLower() == guestSelection.ToLower()).FirstOrDefault();
+            var selectedGuest = guestList.FirstOrDefault(x => x.PassportNum.ToLower() == guestSelection.ToLower());
             if (selectedGuest != null)
             {
                 if (!selectedGuest.IsCheckedin)
@@ -338,7 +337,7 @@ namespace Assignment
                                 Console.WriteLine("\nInvalid input. Please enter a valid room number.\n");
                             }
                         }
-                        Room selectedRoom = roomList.Where(x => x.RoomNumber == roomSelection).FirstOrDefault();
+                        Room selectedRoom = roomList.FirstOrDefault(x => x.RoomNumber == roomSelection);
                         if (selectedRoom != null)
                         {
                             if (selectedRoom.IsAvail)
@@ -498,7 +497,7 @@ namespace Assignment
             ListAllGuest(guestList);
             Console.Write("Select guess by entering passport number: ");
             string? guestSelection = Console.ReadLine();
-            var selectedGuest = guestList.Where(x => x.PassportNum.ToLower() == guestSelection.ToLower()).FirstOrDefault();
+            var selectedGuest = guestList.FirstOrDefault(x => x.PassportNum.ToLower() == guestSelection.ToLower());
             if (selectedGuest != null)
             {
                 Stay selectedStay = selectedGuest.HotelStay;
@@ -521,7 +520,7 @@ namespace Assignment
             ListAllGuest(guestList);
             Console.Write("Select guess by entering passport number: ");
             string? guestSelection = Console.ReadLine();
-            var selectedGuest = guestList.Where(x => x.PassportNum.ToLower() == guestSelection.ToLower()).FirstOrDefault();
+            var selectedGuest = guestList.FirstOrDefault(x => x.PassportNum.ToLower() == guestSelection.ToLower());
             if (selectedGuest != null)
             {
                 if (selectedGuest.IsCheckedin)
@@ -619,7 +618,7 @@ namespace Assignment
             ListAllGuest(guestList);
             Console.Write("Select guess by entering passport number: ");
             string? guestSelection = Console.ReadLine();
-            var selectedGuest = guestList.Where(x => x.PassportNum.ToLower() == guestSelection.ToLower()).FirstOrDefault();
+            var selectedGuest = guestList.FirstOrDefault(x => x.PassportNum.ToLower() == guestSelection.ToLower());
             if (selectedGuest != null)
             {
                 if (selectedGuest.IsCheckedin)
@@ -717,7 +716,7 @@ namespace Assignment
             ListAllGuest(guestList);
             Console.Write("Select guess by entering passport number: ");
             string guestSelection = Console.ReadLine();
-            var selectedGuest = guestList.Where(x => x.PassportNum.ToLower() == guestSelection.ToLower()).FirstOrDefault();
+            var selectedGuest = guestList.FirstOrDefault(x => x.PassportNum.ToLower() == guestSelection.ToLower());
             if (selectedGuest != null)
             {
                 if (selectedGuest.IsCheckedin)
@@ -749,7 +748,7 @@ namespace Assignment
                             string[] userInput = Console.ReadLine().Split(",");
                             currentRoom = int.Parse(userInput[0]);
                             newRoom = int.Parse(userInput[1]);
-                            Room chosenRoom = roomList.Where(x => x.RoomNumber == newRoom).FirstOrDefault();
+                            Room chosenRoom = roomList.FirstOrDefault(x => x.RoomNumber == newRoom);
                             if (guestRooms.Contains(currentRoom) && chosenRoom.IsAvail)
                             {
                                 break;
@@ -764,8 +763,8 @@ namespace Assignment
                             Console.WriteLine("\nInvalid input. Please enter current room and new room separated by ','.\n");
                         }
                     }
-                    Room nowRoom = roomList.Where(x => x.RoomNumber == currentRoom).FirstOrDefault();
-                    Room selectedRoom = roomList.Where(x => x.RoomNumber == newRoom).FirstOrDefault();
+                    Room nowRoom = roomList.FirstOrDefault(x => x.RoomNumber == currentRoom);
+                    Room selectedRoom = roomList.FirstOrDefault(x => x.RoomNumber == newRoom);
                     if (selectedRoom != null)
                     {
                         if (selectedRoom is StandardRoom)

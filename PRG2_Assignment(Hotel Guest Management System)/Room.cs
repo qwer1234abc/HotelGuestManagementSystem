@@ -12,7 +12,6 @@ namespace PRG2_Assignment_Hotel_Guest_Management_System_
         public string BedConfiguration { get; set; }
         public double DailyRate { get; set; }
         public bool IsAvail { get; set; }
-
         public Room() { }
         public Room(int roomNumber, string bedConfiguration, double dailyRate, bool isAvail)
         {

@@ -13,9 +13,7 @@ namespace PRG2_Assignment_Hotel_Guest_Management_System_
         public Stay HotelStay { get; set; }
         public Membership Member { get; set; }
         public bool IsCheckedin { get; set; }
-
         public Guest() { }
-
         public Guest(string name, string passportNum, Stay hotelStay, Membership member)
         {
             Name = name;
