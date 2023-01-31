@@ -110,7 +110,6 @@ namespace Assignment
                 var guest = guestList.FirstOrDefault(x => x.PassportNum == cells[1]);
                 if (guest != null)
                 {
-                    guest.IsCheckedin = bool.Parse(cells[2]);
                     var hotelStay = new Stay
                     {
                         CheckinDate = DateTime.Parse(cells[3]),
@@ -147,7 +146,6 @@ namespace Assignment
                         DailyRate = double.Parse(cells[3]),
                         IsAvail = true
                     };
-
                     roomList.Add(room);
                 }
                 else if (cells[0] == "Deluxe")
@@ -169,11 +167,6 @@ namespace Assignment
                 int roomNumber = int.Parse(cells[5]);
                 int extraRoomNumber = int.TryParse(cells[9], out int result) ? result : -1;
                 var guest = guestList.FirstOrDefault(x => x.PassportNum == cells[1]);
-                var hotelStay = new Stay
-                {
-                    CheckinDate = DateTime.Parse(cells[3]),
-                    CheckoutDate = DateTime.Parse(cells[4]),
-                };
                 var room = roomList.FirstOrDefault(x => x.RoomNumber == roomNumber);
                 if (room != null && guest != null)
                 {
