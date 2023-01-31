@@ -50,7 +50,6 @@ namespace Assignment
                 {
                     //Question 4
                     CheckInGuest(guestList, roomList, stayList);
-                    Console.WriteLine();
                 }
                 else if (userSelect == "5")
                 {
@@ -76,18 +75,6 @@ namespace Assignment
                 {
                     Console.WriteLine("Thank you please come back again.");
                     break;
-                }
-                else if (userSelect == "10")
-                {
-                    foreach (Stay stay in stayList)
-                    {
-                        Console.WriteLine(stay.ToString());
-                        foreach (Room room in stay.RoomList)
-                        {
-                            Console.WriteLine(room.ToString());
-                        }
-                    }
-
                 }
                 else
                 {
@@ -291,7 +278,7 @@ namespace Assignment
             }
             else
             {
-                Console.WriteLine("Passport number already exists, please check in instead.");
+                Console.WriteLine("\nPassport number already exists, please check in instead.\n");
             }
         }
         static void CheckInGuest(List<Guest> guestList, List<Room> roomList, List<Stay> stayList)
@@ -326,22 +313,22 @@ namespace Assignment
                                     }
                                     else
                                     {
-                                        Console.WriteLine("\nCheckout date must be after check-in date. Please enter a valid date.");
+                                        Console.WriteLine("\nCheckout date must be after check-in date. Please enter a valid date.\n");
                                     }
                                 }
                                 else
                                 {
-                                    Console.WriteLine("\nInvalid date format. Please enter the date in the format dd/mm/yyyy.");
+                                    Console.WriteLine("\nInvalid date format. Please enter the date in the format dd/mm/yyyy.\n");
                                 }
                             }
                             else
                             {
-                                Console.WriteLine("\nInvalid date format. Please enter the date in the format dd/mm/yyyy.");
+                                Console.WriteLine("\nInvalid date format. Please enter the date in the format dd/mm/yyyy.\n");
                             }
                         }
                         catch (FormatException)
                         {
-                            Console.WriteLine("\nInvalid date format. Please enter the date in the format dd/mm/yyyy.");
+                            Console.WriteLine("\nInvalid date format. Please enter the date in the format dd/mm/yyyy.\n");
                         }
                     }
                     selectedGuest.HotelStay = new Stay(checkinDate, checkoutDate);
@@ -430,7 +417,7 @@ namespace Assignment
                                         {
                                             selectedGuest.HotelStay = selectedStay;
                                             selectedGuest.IsCheckedin = true;
-                                            Console.WriteLine("Check in successful.");
+                                            Console.WriteLine("Check in successful.\n");
                                             break;
                                         }
                                         else
@@ -447,7 +434,7 @@ namespace Assignment
                                         break;
                                     }
                                 }
-                                else if (selectedRoom is DeluxeRoom)
+                                else
                                 {
                                     DeluxeRoom roomDetails = (DeluxeRoom)selectedRoom;
                                     DeluxeRoom dRoom = new DeluxeRoom(roomDetails.RoomNumber, roomDetails.BedConfiguration, roomDetails.DailyRate, roomDetails.IsAvail);
@@ -486,7 +473,7 @@ namespace Assignment
                                         else if (anotherRoom == "N")
                                         {
                                             selectedGuest.IsCheckedin = true;
-                                            Console.WriteLine("Check in successful.");
+                                            Console.WriteLine("Check in successful.\n");
                                             break;
                                         }
                                         else
@@ -506,23 +493,23 @@ namespace Assignment
                             }
                             else
                             {
-                                Console.WriteLine("\nRoom is not available.");
+                                Console.WriteLine("\nRoom is not available.\n");
                             }
                         }
                         else
                         {
-                            Console.WriteLine("\nRoom not found.");
+                            Console.WriteLine("\nRoom not found.\n");
                         }
                     }
                 }
                 else
                 {
-                    Console.WriteLine("\nGuest is already checked in.");
+                    Console.WriteLine("\nGuest is already checked in.\n");
                 }
             }
             else
             {
-                Console.WriteLine("\nGuest not found.");
+                Console.WriteLine("\nGuest not found.\n");
             }
         }
         static void DisplayStayDetails(List<Guest> guestList)
@@ -545,6 +532,7 @@ namespace Assignment
                             Console.WriteLine($"{selectedStay.ToString()}{r.ToString()}");
                         }
                     }
+                    Console.WriteLine();
                 }
                 else
                 {
@@ -553,7 +541,7 @@ namespace Assignment
             }
             else
             {
-                Console.WriteLine("\nGuest not found.");
+                Console.WriteLine("\nGuest not found.\n");
             }
         }
         static void ExtendStay(List<Guest> guestList)
@@ -717,7 +705,7 @@ namespace Assignment
                                         }
 
                                     }
-                                    Console.WriteLine("\nCheckout success!");
+                                    Console.WriteLine("\nCheckout success!\n");
                                     break;
                                 }
                                 else
@@ -890,7 +878,7 @@ namespace Assignment
                             }
                             selectedStay.RemoveRoom(nowRoom);
                             selectedStay.AddRoom(selectedRoom);
-                            Console.WriteLine($"Room changed from {nowRoom.RoomNumber} to {selectedRoom.RoomNumber}");
+                            Console.WriteLine($"Room changed from {nowRoom.RoomNumber} to {selectedRoom.RoomNumber}\n");
                         }
                         else
                         {
@@ -934,7 +922,7 @@ namespace Assignment
                                 }
                             }
                             selectedStay.AddRoom(selectedRoom);
-                            Console.WriteLine($"Room changed from {nowRoom.RoomNumber} to {selectedRoom.RoomNumber}");
+                            Console.WriteLine($"Room changed from {nowRoom.RoomNumber} to {selectedRoom.RoomNumber}\n");
                         }
                     }
                     else
