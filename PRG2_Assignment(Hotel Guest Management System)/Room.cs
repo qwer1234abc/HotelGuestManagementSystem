@@ -21,7 +21,6 @@ namespace PRG2_Assignment_Hotel_Guest_Management_System_
             IsAvail = isAvail;
         }
         public abstract double CalculateCharges();
-
         public override string ToString()
         {
             return base.ToString();

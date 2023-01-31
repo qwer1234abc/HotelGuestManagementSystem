@@ -30,25 +30,21 @@ namespace Assignment
                 string userSelect = Console.ReadLine();
                 if (userSelect == "1")
                 {
-                    //Question 1
                     ListAllGuest(guestList);
                     Console.WriteLine();
                 }
                 else if (userSelect == "2")
                 {
-                    //Question 2
                     ListAllAvailableRooms(roomList);
                     Console.WriteLine();
                 }
                 else if (userSelect == "3")
                 {
-                    //Question 3
                     RegisterGuest(guestList);
                     Console.WriteLine();
                 }
                 else if (userSelect == "4")
                 {
-                    //Question 4
                     CheckInGuest(guestList, roomList, stayList);
                 }
                 else if (userSelect == "5")
@@ -463,7 +459,6 @@ namespace Assignment
                                     string anotherRoom;
                                     while (true)
                                     {
-
                                         Console.Write("Do you want to select another room [Y/N]: ");
                                         anotherRoom = Console.ReadLine().ToUpper();
                                         if (anotherRoom == "Y")
@@ -523,7 +518,6 @@ namespace Assignment
                 Stay selectedStay = selectedGuest.HotelStay;
                 if (selectedStay != null)
                 {
-
                     Console.WriteLine($"{"Check In",-15}{"Check Out",-15}{"Room Type",-15}{"Room Number",-15}{"Bed Type",-15}{"Daily Rate",-15}{"Availability",-15}");
                     foreach (Room r in selectedStay.RoomList)
                     {
@@ -682,7 +676,6 @@ namespace Assignment
                                     Console.WriteLine("\nPlease enter a valid number.\n");
                                 }
                             }
-
                             if (selectedMembership.RedeemPoints(selectedOffset))
                             {
                                 double deductedFinalbill = finalbill - selectedOffset;
@@ -735,7 +728,6 @@ namespace Assignment
                             {
                                 actualRoomBool.IsAvail = true;
                             }
-
                         }
                         Console.WriteLine("\nCheckout success!\n");
                     }
@@ -750,7 +742,6 @@ namespace Assignment
                 Console.WriteLine("\nGuest not found.\n");
             }
         }
-        // extra feature
         static void ChangeRoom(List<Guest> guestList, List<Room> roomList, List<Stay> stayList)
         {
             ListAllGuest(guestList);
